@@ -1,0 +1,79 @@
+diff --git a/node_modules/thirdweb/dist/esm/react/web/wallets/shared/WalletConnectConnection.js b/node_modules/thirdweb/dist/esm/react/web/wallets/shared/WalletConnectConnection.js
+index d63d9ea9..a738f0ea 100644
+--- a/node_modules/thirdweb/dist/esm/react/web/wallets/shared/WalletConnectConnection.js
++++ b/node_modules/thirdweb/dist/esm/react/web/wallets/shared/WalletConnectConnection.js
+@@ -27,27 +27,28 @@ export const WalletConnectConnection = (props) => {
+                 onDisplayUri(uri) {
+                     const preferNative = walletInfo.mobile.native || walletInfo.mobile.universal;
+                     try {
+-                        if (isMobile()) {
+-                            if (isAndroid()) {
+-                                if (preferNative) {
+-                                    openWindow(formatWalletConnectUrl(preferNative, uri).redirect);
+-                                }
+-                            }
+-                            else if (isIOS()) {
+-                                if (preferNative) {
+-                                    openWindow(formatWalletConnectUrl(preferNative, uri).redirect);
+-                                }
+-                            }
+-                            else {
+-                                const preferUniversal = walletInfo.mobile.universal || walletInfo.mobile.native;
+-                                if (preferUniversal) {
+-                                    openWindow(formatWalletConnectUrl(preferUniversal, uri).redirect);
+-                                }
+-                            }
+-                        }
+-                        else {
+-                            setQrCodeUri(uri);
+-                        }
++                        // if (isMobile()) {
++                        //     if (isAndroid()) {
++                        //         if (preferNative) {
++                        //             openWindow(formatWalletConnectUrl(preferNative, uri).redirect);
++                        //         }
++                        //     }
++                        //     else if (isIOS()) {
++                        //         if (preferNative) {
++                        //             openWindow(formatWalletConnectUrl(preferNative, uri).redirect);
++                        //         }
++                        //     }
++                        //     else {
++                        //         const preferUniversal = walletInfo.mobile.universal || walletInfo.mobile.native;
++                        //         if (preferUniversal) {
++                        //             openWindow(formatWalletConnectUrl(preferUniversal, uri).redirect);
++                        //         }
++                        //     }
++                        // }
++                        // else {
++                        //     setQrCodeUri(uri);
++                        // }
++                        setQrCodeUri(uri);
+                     }
+                     catch {
+                         setErrorConnecting(true);
+@@ -81,15 +82,15 @@ export const WalletConnectConnection = (props) => {
+         scanStarted.current = true;
+         connect();
+     }, [connect]);
+-    if (isMobile()) {
+-        return (_jsx(ConnectingScreen, { locale: {
+-                getStartedLink: locale.getStartedLink,
+-                instruction: locale.connectionScreen.instruction,
+-                tryAgain: locale.connectionScreen.retry,
+-                inProgress: locale.connectionScreen.inProgress,
+-                failed: locale.connectionScreen.failed,
+-            }, onBack: onBack, walletName: walletInfo.name, walletId: wallet.id, errorConnecting: errorConnecting, onRetry: connect, onGetStarted: onGetStarted, client: props.client, size: props.size }));
+-    }
++    // if (isMobile()) {
++    //     return (_jsx(ConnectingScreen, { locale: {
++    //             getStartedLink: locale.getStartedLink,
++    //             instruction: locale.connectionScreen.instruction,
++    //             tryAgain: locale.connectionScreen.retry,
++    //             inProgress: locale.connectionScreen.inProgress,
++    //             failed: locale.connectionScreen.failed,
++    //         }, onBack: onBack, walletName: walletInfo.name, walletId: wallet.id, errorConnecting: errorConnecting, onRetry: connect, onGetStarted: onGetStarted, client: props.client, size: props.size }));
++    // }
+     return (_jsx(ScanScreen, { qrScanInstruction: locale.scanScreen.instruction, onBack: onBack, onGetStarted: onGetStarted, qrCodeUri: qrCodeUri, walletName: walletInfo.name, walletId: wallet.id, getStartedLink: locale.getStartedLink, error: errorConnecting, onRetry: connect, client: props.client, connectModalSize: props.size }));
+ };
+ /**
