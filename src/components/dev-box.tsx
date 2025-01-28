@@ -7,11 +7,15 @@ import { useWebApp } from "@vkruglikov/react-telegram-web-app";
 import { WebApp } from "../types/telegram";
 import { readContract } from "thirdweb";
 import useConnectWallet from "../hooks/use-connect-wallet";
+import useWalletBalance from "../hooks/use-wallet-balance";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function DevBox() {
   const { logout, session } = useAuthContext();
   const tgWebApp: WebApp = useWebApp();
   const { connectWallet } = useConnectWallet();
+  const getBalance = useWalletBalance();
+  const account = useActiveAccount();
 
   // const handleGetPaymentReq = useCallback(
   //   (...parameters: ReactUnityEventParameter[]) => {
@@ -167,6 +171,10 @@ export default function DevBox() {
           }}
         >
           <button onClick={connectWallet}>Connect Wallet</button>
+          <button onClick={() => getBalance(account?.address || "")}>
+            Get Balance
+          </button>
+
           <button onClick={getProductsApi}>Get Products API</button>
 
           <button onClick={purchaseProductApi}>Purchase API</button>

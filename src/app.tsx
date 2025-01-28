@@ -10,9 +10,9 @@ import useConnectWallet from "./hooks/use-connect-wallet";
 import usePay from "./hooks/use-pay";
 import { CurrencyType } from "./types/currency";
 import { WebApp } from "./types/telegram";
-
 import { BOT_URL, MINI_APP_URL } from "./config-global";
-// import DevBox from "./components/dev-box";
+import useWalletBalance from "./hooks/use-wallet-balance";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function App() {
   const {
@@ -31,6 +31,9 @@ export default function App() {
 
   const { connectWallet, isConnecting } = useConnectWallet();
   const { pay, isPaying } = usePay();
+  const account = useActiveAccount();
+
+  const getTokenBalance = useWalletBalance();
 
   const handleConnectWalletReq = useCallback(() => {
     if (!isConnecting) {
@@ -100,22 +103,24 @@ export default function App() {
     sendMessage(MethodName.ClaimDailyLogInRes, "success");
   }, [sendMessage]);
 
+  const handleGetTokenBalaceReq = useCallback(() => {
+    if (isLoaded && account?.address) {
+      getTokenBalance(account.address);
+    }
+  }, [account?.address, getTokenBalance, isLoaded]);
+
   useEffect(() => {
     addEventListener(EventName.ConnectWalletReq, handleConnectWalletReq);
-    // addEventListener(EventName.GetWalletAddressReq, handleGetWalletAddressReq);
     addEventListener(EventName.GetProfileReq, handleGetProfileReq);
     addEventListener(EventName.IsConnectedReq, handleIsConnectedReq);
     addEventListener(EventName.PayReq, handlePayReq);
     addEventListener(EventName.ShareGameReq, handleShareGameReq);
     addEventListener(EventName.FollowBotReq, handleFollowBotReq);
     addEventListener(EventName.ClaimDailyLogInReq, handleClaimDailyLogInReq);
+    addEventListener(EventName.GetTokenBalaceReq, handleGetTokenBalaceReq);
 
     return () => {
       removeEventListener(EventName.ConnectWalletReq, handleConnectWalletReq);
-      // removeEventListener(
-      //   EventName.GetWalletAddressReq,
-      //   handleGetWalletAddressReq
-      // );
       removeEventListener(EventName.GetProfileReq, handleGetProfileReq);
       removeEventListener(EventName.IsConnectedReq, handleIsConnectedReq);
       removeEventListener(EventName.PayReq, handlePayReq);
@@ -125,18 +130,19 @@ export default function App() {
         EventName.ClaimDailyLogInReq,
         handleClaimDailyLogInReq
       );
+      removeEventListener(EventName.GetTokenBalaceReq, handleGetTokenBalaceReq);
     };
   }, [
     addEventListener,
     handleConnectWalletReq,
     handleGetProfileReq,
-    // handleGetWalletAddressReq,
     removeEventListener,
     handleIsConnectedReq,
     handlePayReq,
     handleShareGameReq,
     handleFollowBotReq,
     handleClaimDailyLogInReq,
+    handleGetTokenBalaceReq,
   ]);
 
   // ----------------------------------------------------------------------------------------------
