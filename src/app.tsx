@@ -13,6 +13,7 @@ import { WebApp } from "./types/telegram";
 import { BOT_URL, MINI_APP_URL } from "./config-global";
 import useWalletBalance from "./hooks/use-wallet-balance";
 import { useActiveAccount } from "thirdweb/react";
+import useClaimDailyLogin from "./hooks/use-claim-daily-login";
 
 export default function App() {
   const {
@@ -24,6 +25,8 @@ export default function App() {
   } = useGameContext();
 
   const tgWebApp: WebApp = useWebApp();
+
+  const { claimDailyLogin, isClaiming } = useClaimDailyLogin();
 
   const [initDataUnsafe, initData] = useInitData();
 
@@ -47,16 +50,13 @@ export default function App() {
     console.log(initDataUnsafe);
     if (initData && isLoaded) {
       sendMessage(MethodName.GetProfileRes, initData);
-    } else {
-      alert("Telegram not connected");
     }
   }, [initData, initDataUnsafe, isLoaded, sendMessage]);
 
   const handleIsConnectedReq = useCallback(() => {
     console.log("handleIsConnectedReq");
     if (!session) {
-      alert("Not connected");
-      return;
+      throw new Error("Not connected");
     }
     if (isLoaded) {
       sendMessage(MethodName.IsConnectedRes, `Connected: ${session}`);
@@ -68,8 +68,7 @@ export default function App() {
       (async () => {
         try {
           if (isPaying) {
-            alert("Payment in progress");
-            return;
+            throw new Error("Payment in progress");
           }
 
           console.log("handlePayReq");
@@ -100,8 +99,15 @@ export default function App() {
   }, [sendMessage, tgWebApp]);
 
   const handleClaimDailyLogInReq = useCallback(() => {
-    sendMessage(MethodName.ClaimDailyLogInRes, "success");
-  }, [sendMessage]);
+    (async () => {
+      if (isClaiming) {
+        throw new Error("Claiming in progress");
+      }
+
+      await claimDailyLogin();
+      sendMessage(MethodName.ClaimDailyLogInRes, "success");
+    })();
+  }, [claimDailyLogin, isClaiming, sendMessage]);
 
   const handleGetTokenBalaceReq = useCallback(() => {
     if (isLoaded && account?.address) {

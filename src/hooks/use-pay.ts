@@ -89,7 +89,6 @@ export default function usePay() {
         if (!currencyType) {
           throw new Error("Currency type is required");
         }
-        // TODO : consult with the team to get the account
         if (!account) {
           throw new Error("Account is required");
         }

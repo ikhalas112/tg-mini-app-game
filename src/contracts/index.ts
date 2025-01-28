@@ -1,6 +1,7 @@
 import { getContract } from "thirdweb";
 import {
   ASTR_CONTRACT_ADDRESS,
+  AXD_DAILY_LOGIN_CONTRACT_ADDRESS,
   PAYMENT_PROCESSOR_CONTRACT_ADDRESS,
   USDT_CONTRACT_ADDRESS,
 } from "../config-global";
@@ -14,6 +15,35 @@ export const paymentProcessorContract = getContract({
   chain: getChain(),
   client,
   abi: paymentProcessorAbi,
+});
+
+export const axdDailyLoginContract = getContract({
+  address: AXD_DAILY_LOGIN_CONTRACT_ADDRESS,
+  chain: getChain(),
+  client,
+  abi: [
+    { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "address",
+          name: "user",
+          type: "address",
+        },
+      ],
+      name: "DailyLoginClaimed",
+      type: "event",
+    },
+    {
+      inputs: [],
+      name: "claim",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+  ],
 });
 
 export const usdtContract = getContract({

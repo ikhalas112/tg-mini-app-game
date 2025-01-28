@@ -2,6 +2,10 @@ export const HOST_API = import.meta.env.VITE_HOST_API;
 export const THIRDWEB_CLIENT_ID = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
 
 export const CHAIN_ID = import.meta.env.VITE_CHAIN_ID;
+
+export const AXD_DAILY_LOGIN_CONTRACT_ADDRESS = import.meta.env
+  .VITE_AXD_DAILY_LOGIN_CONTRACT_ADDRESS;
+
 export const PAYMENT_PROCESSOR_CONTRACT_ADDRESS = import.meta.env
   .VITE_PAYMENT_PROCESSOR_CONTRACT_ADDRESS;
 

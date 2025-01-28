@@ -9,6 +9,7 @@ import { readContract } from "thirdweb";
 import useConnectWallet from "../hooks/use-connect-wallet";
 import useWalletBalance from "../hooks/use-wallet-balance";
 import { useActiveAccount } from "thirdweb/react";
+import useClaimDailyLogin from "../hooks/use-claim-daily-login";
 
 export default function DevBox() {
   const { logout, session } = useAuthContext();
@@ -16,6 +17,7 @@ export default function DevBox() {
   const { connectWallet } = useConnectWallet();
   const getBalance = useWalletBalance();
   const account = useActiveAccount();
+  const { claimDailyLogin } = useClaimDailyLogin();
 
   // const handleGetPaymentReq = useCallback(
   //   (...parameters: ReactUnityEventParameter[]) => {
@@ -174,6 +176,8 @@ export default function DevBox() {
           <button onClick={() => getBalance(account?.address || "")}>
             Get Balance
           </button>
+
+          <button onClick={claimDailyLogin}>Claim Daily Login</button>
 
           <button onClick={getProductsApi}>Get Products API</button>
 

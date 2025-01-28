@@ -83,7 +83,6 @@ export function AuthProvider({ children }: Props) {
     }
     setSesstionToken(null);
     setSession(null);
-    alert("You have been logged out");
   }, [account, disconnect, wallet]);
 
   const checkAuthenticated = sesstionToken

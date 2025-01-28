@@ -41,8 +41,7 @@ export default function useConnectWallet() {
     (async () => {
       try {
         if (activeAccount && activeWallet) {
-          alert("Wallet already connected");
-          return;
+          throw new Error("Wallet already connected");
         }
         console.log("start connecting wallet");
         connecting.onTrue();
