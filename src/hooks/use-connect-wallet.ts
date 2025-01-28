@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import axios from "../utils/axios";
 import { IssueNonce } from "../types/auth";
@@ -24,9 +24,18 @@ export default function useConnectWallet() {
   const { disconnect } = useDisconnect();
   const activeWallet = useActiveWallet();
   const { sendMessage } = useGameContext();
+  const error = useBoolean(false);
 
-  console.log({ activeAccount });
-  console.log({ activeWallet });
+  // console.log({ activeAccount });
+  // console.log({ activeWallet });
+
+  useEffect(() => {
+    if (activeWallet && error.value) {
+      console.log("disconnecting wallet");
+      disconnect(activeWallet);
+      error.onFalse();
+    }
+  }, [activeWallet, disconnect, error, error.value]);
 
   const connectWallet = useCallback(() => {
     (async () => {
@@ -35,6 +44,7 @@ export default function useConnectWallet() {
           alert("Wallet already connected");
           return;
         }
+        console.log("start connecting wallet");
         connecting.onTrue();
 
         const wallet = await connect({
@@ -84,31 +94,32 @@ export default function useConnectWallet() {
             signedMessage: signature,
           }
         );
-        console.log(walletConnect);
+        console.log({ "/wallet/connect": walletConnect });
         if (!walletConnect.success) {
           throw new Error("Wallet connection failed");
         }
 
+        console.log("connected wallet");
         sendMessage(MethodName.ConnectWalletRes, account.address);
-      } catch (error) {
-        // error handling
-        console.log({ activeWallet });
-        if (activeWallet) {
-          disconnect(activeWallet);
+      } catch (e: any) {
+        error.onTrue();
+        console.log(e);
+        console.error(e?.message);
+        console.error(e?.code);
+        console.log(e?.statusCode);
+        if (e?.statusCode === 2013) {
+          sendMessage(MethodName.ConnectWalletRes, "invalidWallet");
+          return;
+        } else if (e?.code === 5000) {
+          sendMessage(MethodName.ConnectWalletRes, "rejectwallet");
+        } else {
+          sendMessage(MethodName.ConnectWalletRes, "interrupt");
         }
-        console.error(error);
       } finally {
         connecting.onFalse();
       }
     })();
-  }, [
-    activeAccount,
-    connect,
-    connecting,
-    disconnect,
-    sendMessage,
-    activeWallet,
-  ]);
+  }, [activeAccount, activeWallet, connecting, connect, sendMessage, error]);
 
   return { connectWallet, isConnecting: connecting.value };
 }

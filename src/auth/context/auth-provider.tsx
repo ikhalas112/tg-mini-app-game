@@ -7,7 +7,7 @@ import axios from "../../utils/axios";
 import { useBoolean } from "../../utils/hooks/use-boolean";
 // import { SESSION_TOKEN_KEY } from "../config";
 import { setSession } from "./utils";
-import { useInitData } from "@vkruglikov/react-telegram-web-app";
+// import { useInitData } from "@vkruglikov/react-telegram-web-app";
 import { useGameContext } from "../../game-context/use-game-provider";
 import { MethodName } from "../../types/method";
 import {
@@ -15,6 +15,7 @@ import {
   useDisconnect,
   useActiveWallet,
 } from "thirdweb/react";
+import { useInitData } from "@vkruglikov/react-telegram-web-app";
 
 type Props = {
   children: React.ReactNode;
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: Props) {
           }
         );
 
-        console.log({ login });
+        // console.log({ login });
 
         setSesstionToken(login.data.sessionToken);
         setSession(login.data.sessionToken);

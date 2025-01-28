@@ -10,7 +10,7 @@ import useConnectWallet from "./hooks/use-connect-wallet";
 import usePay from "./hooks/use-pay";
 import { CurrencyType } from "./types/currency";
 import { WebApp } from "./types/telegram";
-import { useActiveAccount } from "thirdweb/react";
+
 import { BOT_URL, MINI_APP_URL } from "./config-global";
 // import DevBox from "./components/dev-box";
 
@@ -25,8 +25,6 @@ export default function App() {
 
   const tgWebApp: WebApp = useWebApp();
 
-  const account = useActiveAccount();
-
   const [initDataUnsafe, initData] = useInitData();
 
   const { session } = useAuthContext();
@@ -39,19 +37,6 @@ export default function App() {
       connectWallet();
     }
   }, [connectWallet, isConnecting]);
-
-  const handleGetWalletAddressReq = useCallback(() => {
-    console.log("handleGetWalletAddressReq");
-    console.log(account);
-    if (account?.address && isLoaded) {
-      sendMessage(
-        MethodName.ConnectWalletRes,
-        `Wallet connected ${account.address}`
-      );
-    } else {
-      alert("Wallet not connected");
-    }
-  }, [sendMessage, account, isLoaded]);
 
   const handleGetProfileReq = useCallback(() => {
     console.log("handleGetProfileReq");
@@ -117,7 +102,7 @@ export default function App() {
 
   useEffect(() => {
     addEventListener(EventName.ConnectWalletReq, handleConnectWalletReq);
-    addEventListener(EventName.GetWalletAddressReq, handleGetWalletAddressReq);
+    // addEventListener(EventName.GetWalletAddressReq, handleGetWalletAddressReq);
     addEventListener(EventName.GetProfileReq, handleGetProfileReq);
     addEventListener(EventName.IsConnectedReq, handleIsConnectedReq);
     addEventListener(EventName.PayReq, handlePayReq);
@@ -127,10 +112,10 @@ export default function App() {
 
     return () => {
       removeEventListener(EventName.ConnectWalletReq, handleConnectWalletReq);
-      removeEventListener(
-        EventName.GetWalletAddressReq,
-        handleGetWalletAddressReq
-      );
+      // removeEventListener(
+      //   EventName.GetWalletAddressReq,
+      //   handleGetWalletAddressReq
+      // );
       removeEventListener(EventName.GetProfileReq, handleGetProfileReq);
       removeEventListener(EventName.IsConnectedReq, handleIsConnectedReq);
       removeEventListener(EventName.PayReq, handlePayReq);
@@ -145,7 +130,7 @@ export default function App() {
     addEventListener,
     handleConnectWalletReq,
     handleGetProfileReq,
-    handleGetWalletAddressReq,
+    // handleGetWalletAddressReq,
     removeEventListener,
     handleIsConnectedReq,
     handlePayReq,
