@@ -89,14 +89,15 @@ export default function usePay() {
         if (!currencyType) {
           throw new Error("Currency type is required");
         }
-        if (!account) {
-          throw new Error("Account is required");
-        }
 
         switch (currencyType) {
           // ---------------------- on chain payment ----------------------
           case "$USDT":
           case "$ASTR": {
+            if (!account) {
+              throw new Error("Account is required");
+            }
+
             const tokenAddress = getTokenContractByCurrencyType(
               currencyType
             ).address.toLowerCase() as `0x${string}`;
