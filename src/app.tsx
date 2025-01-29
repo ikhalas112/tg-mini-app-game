@@ -104,8 +104,8 @@ export default function App() {
         throw new Error("Claiming in progress");
       }
 
-      await claimDailyLogin();
-      sendMessage(MethodName.ClaimDailyLogInRes, "success");
+      const status = await claimDailyLogin();
+      sendMessage(MethodName.ClaimDailyLogInRes, status);
     })();
   }, [claimDailyLogin, isClaiming, sendMessage]);
 

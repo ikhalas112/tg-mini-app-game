@@ -8,24 +8,33 @@ export default function useClaimDailyLogin() {
   const claimState = useBoolean(false);
 
   const claimDailyLogin = async () => {
-    if (!account) {
-      throw new Error("Account is required");
+    try {
+      if (!account) {
+        throw new Error("Account is required");
+      }
+
+      const transaction = prepareContractCall({
+        contract: axdDailyLoginContract,
+        method: "claim",
+        params: [],
+      });
+
+      const receipt = await sendAndConfirmTransaction({
+        transaction: transaction,
+        account,
+      });
+
+      console.log("claim receipt", receipt);
+
+      if (receipt.status !== "success") {
+        throw new Error("Transaction failed");
+      }
+
+      return "success";
+    } catch (error) {
+      console.log(error);
+      return "failed";
     }
-
-    const transaction = prepareContractCall({
-      contract: axdDailyLoginContract,
-      method: "claim",
-      params: [],
-    });
-
-    const receipt = await sendAndConfirmTransaction({
-      transaction: transaction,
-      account,
-    });
-
-    console.log("claim ", receipt);
-
-    return receipt;
   };
 
   return { claimDailyLogin, isClaiming: claimState.value };
