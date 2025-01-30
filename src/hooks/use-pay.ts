@@ -18,11 +18,15 @@ import {
 } from "thirdweb";
 import { approve } from "thirdweb/extensions/erc20";
 import { useActiveAccount } from "thirdweb/react";
+import { useWebApp } from "@vkruglikov/react-telegram-web-app";
+import { WebApp } from "../types/telegram";
+import { StarInvoice } from "../types/payment";
 
 export default function usePay() {
   const account = useActiveAccount();
   const payingState = useBoolean(false);
   const { sendMessage } = useGameContext();
+  const tgWebApp: WebApp = useWebApp();
 
   const approveToken = useCallback(
     async (currencyType: CurrencyType, amount: bigint) => {
@@ -151,18 +155,30 @@ export default function usePay() {
           // ---------------------- off chain payment ----------------------
 
           case "Stars": {
-            const { data: offChainOrder } = await axios.post<Response<any>>(
-              "/api/v1/social-fi/dapp/telegram/purchase/off-chain",
-              {
-                product_id: itemId,
-              }
-            );
-            console.log(offChainOrder);
-            if (!offChainOrder.success) {
+            const { data: starInvoice } = await axios.post<
+              Response<StarInvoice>
+            >("/api/v1/social-fi/dapp/telegram/purchase/off-chain/invoice", {
+              product_id: itemId,
+            });
+            console.log(starInvoice);
+
+            if (!starInvoice.success) {
               throw new Error("purchase order failed");
             }
 
-            sendMessage(MethodName.PayRes, "success");
+            if (!starInvoice?.data?.invoice_url) {
+              throw new Error("invoice url not found");
+            }
+
+            tgWebApp.openInvoice(starInvoice.data.invoice_url, (status) => {
+              console.log({ status });
+              if (status === "paid") {
+                sendMessage(MethodName.PayRes, "success");
+              } else {
+                sendMessage(MethodName.PayRes, "failed");
+              }
+            });
+
             break;
           }
           default:
@@ -175,7 +191,7 @@ export default function usePay() {
         payingState.onFalse();
       }
     },
-    [account, approveToken, getItemAmount, payingState, sendMessage]
+    [account, approveToken, getItemAmount, payingState, sendMessage, tgWebApp]
   );
 
   return { pay, isPaying: payingState.value };
